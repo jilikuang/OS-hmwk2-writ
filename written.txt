@@ -1,0 +1,31 @@
+1. (2.1)
+The stack pointer is switched to point to a kernel stack because it is preferred to save the current process state in the kernel stack instead of in the user-level stack. Saving the process state in the kernel stack is favored majorly for two reasons: reliability and security.
+
+For the reliability reason, basically the kernel does not really trust the user program; it even assume that the user-level stack pointer could point to an invalid memory address. To be able to continue working correctly in the kernel handler, it is preferred to save the state in a trusted stack.
+
+For the security reason, since the threads in the same process share memory, the stack could be accessed or even modified by other threads during the interrupt handling. If the state is modified, it could let the kernel jump to any places when the kernel is trying to resume the interrupted process.
+
+2. (2.2)
+The screen memory is protected to prevent the other programs from messing up the output of some program. If a malicious program can control the screen buffer, it can present whatever it wants to the users. For example, when some process is running, a malicious program can draw a fake message pretending rendered by the program, and mislead the users to do something bad or leaking their private and secure information.
+
+3. (2.3)
+Without privileged instructions, a malicious program can change its priority, enable/disable interrupts, and even change memory access. With those abilities, the program could actually act like a kernel, as least having the same power as the kernel. In that case, the program could mess up the whole system or take control of the computer.
+
+Although lacking privileged instructions could lead to losing memory protection, having no memory protection itself can be disastrous to reliability, security and privacy. Without memory protection, a malign program can access memory region of other programs for even private data. Furthermore, modifying the memory of other programs can make the programs crash or become harmful as well.
+
+Timer interrupts are used majorly to let the kernel regain control of the system after certain period. Without this mechanism, when some program is trapped in a infinite loop, there could be no way for users to terminate the program.
+
+4. (2.9)
+a.
+When the guest kernel calls popf, it expects to change both the ALU flags and the systems flags, since it thinks it runs on a “real” machine in privileged mode. However, it actually runs on a virtual machine in user mode. The popf being called will only change the ALU flags without changing the systems flags, which is not the result the guest kernel anticipated. Thus a transparent virtualization is not achieved due to this behavior discrepancy.
+
+b.
+A straight consideration is to make popf have synchronized behavior under the two circumstances, changing the systems flags both. However, since the systems flags could be something very critical (e.g. the interrupt mask), this thought actually leads to make popf a privileged instruction.
+
+If it is not expected to let other non-VM programs to change their expectation when invoking popf or the design is thought reasonable and necessary, a supported method, e.g. a flag, etc, should be provided by x86 hardware to execute privileged-popf even if the popf is invoked in user mode. When the virtual machine are trying to call popf for the guest kernel, it can trigger the method and then invoke popf, such that the popf can be run in privileged mode to let the guest kernel get the expected result.
+
+5. (2.12)
+
+
+6. (2.15)
+When CPU receives an interrupt, it will mask interrupts first and then save some important state variables of the current process to some registers. After the important state is saved, the stack pointer will be switched to the kernel interrupt stack. The previously saved important state variables will be pushed to the kernel stack, and some other state variables will then be saved to the stack. After the state of the current process is preserved, the program counter will be switch to the corresponding interrupt handler in the interrupt vector table, which was set up when the kernel was initialized, and then the interrupt handler starts to be executed.
