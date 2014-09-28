@@ -25,7 +25,9 @@ A straight consideration is to make popf have synchronized behavior under the tw
 If it is not expected to let other non-VM programs to change their expectation when invoking popf or the design is thought reasonable and necessary, a supported method, e.g. a flag, etc, should be provided by x86 hardware to execute privileged-popf even if the popf is invoked in user mode. When the virtual machine are trying to call popf for the guest kernel, it can trigger the method and then invoke popf, such that the popf can be run in privileged mode to let the guest kernel get the expected result.
 
 5. (2.12)
-
+Iteration: 1000000
+1000000-time getpid(): 4545 msec
+1000000-time getxid(): 3102 msec
 
 6. (2.15)
 When CPU receives an interrupt, it will mask interrupts first and then save some important state variables of the current process to some registers. After the important state is saved, the stack pointer will be switched to the kernel interrupt stack. The previously saved important state variables will be pushed to the kernel stack, and some other state variables will then be saved to the stack. After the state of the current process is preserved, the program counter will be switch to the corresponding interrupt handler in the interrupt vector table, which was set up when the kernel was initialized, and then the interrupt handler starts to be executed.
