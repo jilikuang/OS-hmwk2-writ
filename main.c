@@ -22,11 +22,12 @@ int main(int argc, char *argv[])
 	char *exit;
 
 	/* Get iteration number */
-	if (argc > 2)
+	if (argc > 1)
 		iter = strtol(argv[1], &exit, 10);
 	else
 		iter = ITER_DEFAULT;
 
+	printf("Iteration: %d\n", iter);
 	/* Check getpid() */
 	retval = gettimeofday(&t0, NULL);
 	for (i = 0; i < iter; i++)
@@ -39,7 +40,7 @@ int main(int argc, char *argv[])
 	for (i = 0; i < iter; i++)
 		retval = getxid();
 	retval = gettimeofday(&t1, NULL);
-	printf("%d-time getpid(): %ld msec\n", iter, TIMEDIFF(t0, t1));
+	printf("%d-time getxid(): %ld msec\n", iter, TIMEDIFF(t0, t1));
 
 	return 0;
 }
